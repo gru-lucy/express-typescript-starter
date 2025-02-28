@@ -1,0 +1,81 @@
+version: '3.7'
+
+services:
+  express-typescript-starter:
+    build:
+      context: ..
+      args:
+        - PORT=${PORT}
+      dockerfile: ./docker/Dockerfile
+    image: ${IMAGE_NAME}:prod
+    container_name: express-typescript-starter
+    restart: always
+    depends_on:
+      - express-typescript-starter-postgres
+    env_file:
+      - ../.env
+    environment:
+      - TZ=${TZ}
+      - WAIT_HOSTS=express-typescript-starter-postgres:5432
+    volumes:
+      - ${LOGS_VOLUME}:/app/logs
+    ports:
+      - ${EXTERNAL_PORT}:${PORT}
+
+  express-typescript-starter-postgres:
+    image: postgres:16
+    container_name: express-typescript-starter-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - TZ=${TZ}
+    volumes:
+      - ${DB_VOLUME}:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:5432
+
+  express-typescript-starter-pgweb:
+    image: sosedoff/pgweb
+    container_name: express-typescript-starter-pgweb
+    restart: always
+    depends_on:
+      - express-typescript-starter-postgres
+    environment:
+      - PGWEB_DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@express-typescript-starter-postgres:5432/${DB_NAME}?sslmode=disable
+      - TZ=${TZ}
+    ports:
+      - ${DB_MANAGER_PORT}:8081
+
+  express-typescript-starter-redis:
+    image: redis:7
+    container_name: express-typescript-starter-redis
+    restart: always
+    command: /bin/sh -c "redis-server --appendonly yes --requirepass ${CACHE_PASSWORD}"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${CACHE_VOLUME}:/data
+    ports:
+      - ${CACHE_PORT}:6379
+
+  express-typescript-starter-redis-commander:
+    image: rediscommander/redis-commander
+    container_name: express-typescript-starter-redis-commander
+    restart: always
+    platform: linux/amd64
+    depends_on:
+      - express-typescript-starter-redis
+    environment:
+      - REDIS_LABEL=${IMAGE_NAME}-cache
+      - REDIS_HOST=express-typescript-starter-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${CACHE_PASSWORD}
+      - TZ=${TZ}
+    ports:
+      - ${CACHE_MANAGER_PORT}:8081
+
+networks:
+  default:
+    name: ${IMAGE_NAME}-network
