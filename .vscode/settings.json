@@ -1,0 +1,31 @@
+{
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "cSpell.enabled": true,
+  "cSpell.userWords": [], // only use words from .cspell.json
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.format": "explicit",
+    "source.fixAll.stylelint": "explicit",
+    "source.fixAll.htmlhint": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.options": {
+    "extensions": [".js", ".ts", ".html"]
+  },
+  "eslint.validate": ["javascript", "typescript", "html"],
+  "htmlhint.enable": true,
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "errorLens.gutterIconsEnabled": true,
+  "errorLens.gutterIconSet": "borderless",
+  "errorLens.followCursor": "activeLine",
+  "stylelint.enable": true,
+  "stylelint.validate": ["css", "scss"],
+  "editor.acceptSuggestionOnEnter": "on"
+}
